@@ -2,7 +2,6 @@
 // http://localhost:3000/isolated/exercise/06.js
 
 import * as React from 'react'
-import warning from 'warning'
 import {Switch} from '../switch'
 
 const callAll = (...fns) => (...args) => fns.forEach(fn => fn?.(...args))
@@ -31,23 +30,11 @@ function useToggle({
   reducer = toggleReducer,
   onChange,
   on: controlledOn,
-  readOnly = false,
 } = {}) {
   const {current: initialState} = React.useRef({on: initialOn})
   const [state, dispatch] = React.useReducer(reducer, initialState)
 
   const onIsControlled = controlledOn != null
-
-  const hasOnChange = Boolean(onChange)
-
-  React.useEffect(() => {
-    warning(!(onIsControlled && !hasOnChange && !readOnly),
-      'You provided a value for `on`, but did not provide an ' +
-      '`onChange` handler. This will render a read-only toggle. If you ' +
-      'want it to be mutable, use `initialOn`. Otherwise, set either ' +
-      '`onChange` or `readOnly`.')
-  }, [onIsControlled, hasOnChange, readOnly])
-
   const on = onIsControlled ? controlledOn : state.on
 
   const dispatchWithOnChange = (action) => {
@@ -85,8 +72,8 @@ function useToggle({
   }
 }
 
-function Toggle({on: controlledOn, onChange, readOnly}) {
-  const {on, getTogglerProps} = useToggle({on: controlledOn, onChange, readOnly})
+function Toggle({on: controlledOn, onChange}) {
+  const {on, getTogglerProps} = useToggle({on: controlledOn, onChange})
   const props = getTogglerProps({on})
   return <Switch {...props} />
 }
